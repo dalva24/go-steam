@@ -58,7 +58,8 @@ type Server struct {
 }
 
 // Connect to the source server.
-func Connect(addr string, opts ...ConnectOption) (_ *Server, err error) {
+func Connect(addr string, ipFO string, opts ...ConnectOption) (_ *Server, err error) {
+
 	s := Server{
 		addr: addr,
 	}
@@ -68,8 +69,11 @@ func Connect(addr string, opts ...ConnectOption) (_ *Server, err error) {
 	}
 
 	if s.opts.dialFn == nil {
+		q := net.ParseIP(ipFO)
+		addr := &net.IPAddr{q, ""}
 		s.opts.dialFn = (&net.Dialer{
-			Timeout: 1 * time.Second,
+			Timeout:   1 * time.Second,
+			LocalAddr: addr,
 		}).Dial
 	}
 
